@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "urlimg"
+
+include("urlimg-common")
+include(
+        "urlimg-fabric",
+        "urlimg-fabric:urlimg-fabric-1.19.4",
+        "urlimg-fabric:urlimg-fabric-1.20",
+        "urlimg-fabric:urlimg-fabric-1.20.2",
+        "urlimg-fabric:urlimg-fabric-1.20.5"
+)

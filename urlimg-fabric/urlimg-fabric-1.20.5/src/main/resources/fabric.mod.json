@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "urlimg",
+  "version": "${version}",
+  "name": "urlimg",
+  "description": "urlimg",
+  "authors": [
+    "Paulzzh"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Paulzzh/urlimg",
+    "sources": "https://github.com/Paulzzh/urlimg",
+    "issues": "https://github.com/Paulzzh/urlimg/issues"
+  },
+  "license": "GPL-3.0",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.paulzzh.urlimg.Mod"
+    ]
+  },
+  "mixins": [
+    "urlimg.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric-api": "*",
+    "minecraft": ">=1.20.5",
+    "java": ">=21"
+  }
+}
