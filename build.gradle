@@ -1,72 +1,86 @@
 plugins {
-	id("fabric-loom") version "1.6-SNAPSHOT" apply false
+    id("fabric-loom") version "1.6-SNAPSHOT" apply false
 }
 
 def gitCommitHash = {
-	def cmd = "git rev-parse --short HEAD"
-	try {
-		def ver = cmd.execute().text.trim()
-		if (ver == "") return ""
-		return "+" + ver
-	} catch (Exception e) {
-		e.printStackTrace()
-		return ""
-	}
+    def cmd = "git rev-parse --short HEAD"
+    try {
+        def ver = cmd.execute().text.trim()
+        if (ver == "") return ""
+        return "+" + ver
+    } catch (Exception e) {
+        e.printStackTrace()
+        return ""
+    }
 }
 
 allprojects {
-	repositories {
-		mavenCentral()
-		maven {
-			name = 'Jitpack'
-			url = 'https://jitpack.io'
-		}
-		maven {
-			name = "TerraformersMC"
-			url = "https://maven.terraformersmc.com/releases/"
-		}
-	}
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'Jitpack'
+            url = 'https://jitpack.io'
+        }
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/releases/"
+        }
+    }
 }
 
 subprojects {
-	apply plugin: 'java-library'
+    apply plugin: 'java-library'
 
-	group = "com.paulzzh"
-	version = "1.0.0"
+    group = "com.paulzzh"
+    version = "1.0.0"
 
-	jar {
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-		from {
-			//noinspection GroovyMissingReturnStatement
-			configurations.runtimeClasspath.collect {
-				if (project.name != "urlimg-common") {
-					if (it.name.contains("urlimg-common")) {
-						it.isDirectory() ? it : zipTree(it)
-					}
-				}
-			}
-		}
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from {
+            //noinspection GroovyMissingReturnStatement
+            configurations.runtimeClasspath.collect {
+                if (project.name != "urlimg-common") {
+                    if (it.name.contains("urlimg-common")) {
+                        it.isDirectory() ? it : zipTree(it)
+                    }
+                }
+            }
+        }
 
-		from("${rootDir}/LICENSE")
-	}
+        from("${rootDir}/LICENSE")
 
-	processResources {
-		inputs.property "version", project.version
+        if (project.name.contains("urlimg-forge-1")) {
+            manifest {
+                attributes([
+                        "Specification-Title"     : "urlimg",
+                        "Specification-Vendor"    : "Paulzzh",
+                        "Specification-Version"   : "1",
+                        "Implementation-Title"    : "urlimg",
+                        "Implementation-Version"  : project.version,
+                        "Implementation-Vendor"   : "Paulzzh",
+                        "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                ])
+            }
+        }
+    }
 
-		filesMatching("fabric.mod.json") {
-			expand "version": project.version
-		}
+    processResources {
+        inputs.property "version", project.version
 
-		filesMatching("META-INF/mods.toml") {
-			expand "version": project.version
-		}
+        filesMatching("fabric.mod.json") {
+            expand "version": project.version
+        }
 
-		filesMatching("mcmod.info") {
-			expand "version": project.version
-		}
-	}
+        filesMatching("META-INF/mods.toml") {
+            expand "version": project.version
+        }
 
-	tasks.withType(JavaCompile).configureEach {
-		options.encoding = 'UTF-8'
-	}
+        filesMatching("mcmod.info") {
+            expand "version": project.version
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
 }

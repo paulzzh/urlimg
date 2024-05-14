@@ -3,6 +3,7 @@ package com.paulzzh.urlimg;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.ClickEvent;
@@ -35,10 +36,10 @@ public class Mod implements ClientModInitializer {
     private static final int line_height = 10;
     public static final ImageManager IM = new ImageManager() {
         public void showImages(String msg) {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            mc.inGameHud.getChatHud().addMessage(Text.of("urlimg=" + msg));
+            ChatHud hud = MinecraftClient.getInstance().inGameHud.getChatHud();
+            hud.addMessage(Text.of("urlimg=" + msg));
             for (int i = 0; i < line; i++) {
-                mc.inGameHud.getChatHud().addMessage(Text.of(""));
+                hud.addMessage(Text.of(""));
             }
         }
 

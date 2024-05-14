@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.paulzzh.urlimg.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "MixinChatHud",
+    "MixinChatMessages",
+    "MixinChatScreen"
+  ],
+  "refmap": "urlimg.refmap.json",
+  "minVersion": "0.8"
+}
