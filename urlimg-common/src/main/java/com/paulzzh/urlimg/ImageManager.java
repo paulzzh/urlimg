@@ -1,19 +1,30 @@
 package com.paulzzh.urlimg;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-public interface ImageManager {
-    Map<String, Image> cache = Collections.synchronizedMap(new HashMap<>());
-    Map<String, List<Image>> images = Collections.synchronizedMap(new HashMap<>());
+public abstract class ImageManager {
+    private static final Map<String, Image<?>> cache = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, List<Image<?>>> images = Collections.synchronizedMap(new HashMap<>());
+    private static final List<String> hashes = Collections.synchronizedList(new ArrayList<>());
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor2 = Executors.newCachedThreadPool();
 
-    static String bytesToHex(byte[] hash) {
+    public static String bytesToHex(byte[] hash) {
         StringBuilder hexString = new StringBuilder(2 * hash.length);
         for (byte b : hash) {
             String hex = Integer.toHexString(0xff & b);
@@ -25,69 +36,89 @@ public interface ImageManager {
         return hexString.toString();
     }
 
-    static Image getImage(String hash) {
-        return cache.get(hash);
+    public abstract Image<?> readImage(String hash, InputStream in);
+
+    public abstract Image<?> readAndSaveImage(String hash, InputStream in, File out);
+
+    public abstract void showImages(String id);
+
+    public List<Image<?>> getImages(String hash) {
+        synchronized (images) {
+            return images.get(hash);
+        }
     }
 
-    static List<Image> getImages(String hash) {
-        return images.get(hash);
-    }
-
-    default void addImages(List<String> list) {
-        new Thread(() -> {
-            List<Image> imgs = new ArrayList<>();
+    public void addImages(List<String> list) {
+        executor.submit(() -> {
+            List<Image<?>> imgs = new ArrayList<>();
+            List<Future<Image<?>>> futures = new ArrayList<>();
             for (String url : list) {
-                Image img = addImage(url);
-                if (img != null) {
-                    imgs.add(img);
+                futures.add(executor2.submit(() -> addImage(url)));
+            }
+            for (Future<Image<?>> future : futures) {
+                try {
+                    Image<?> img = future.get();
+                    if (img != null) {
+                        imgs.add(img);
+                    }
+                } catch (Exception ignored) {
+
                 }
             }
             if (!imgs.isEmpty()) {
                 final String uuid = UUID.randomUUID().toString().replace("-", "");
-                images.put(uuid, imgs);
+                synchronized (images) {
+                    images.put(uuid, imgs);
+                }
                 showImages(uuid);
             }
-        }).start();
+        });
     }
 
-    default Image addImage(String url) {
+    public Image<?> addImage(String url) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             String hash = bytesToHex(md.digest(url.getBytes(StandardCharsets.UTF_8)));
-            Path path = Paths.get("urlimgcache/" + hash + ".png");
+            File out = Paths.get("urlimgcache/" + hash + ".png").toFile();
             Files.createDirectories(Paths.get("urlimgcache/"));
-            if (cache.containsKey(hash)) {
-                return cache.get(hash);
-            } else if (path.toFile().isFile()) {
-                Image img = readImage(hash, Files.newInputStream(path));
-                if (img == null) {
-                    img = readImage(hash, new URL(url).openStream());
-                    if (img != null) {
-                        saveImage(img, path);
+            synchronized (hashes) {
+                if (hashes.contains(hash)) {
+                    hash = hashes.get(hashes.indexOf(hash));
+                } else {
+                    hashes.add(hash);
+                }
+            }
+            synchronized (hash) {
+                synchronized (cache) {
+                    if (cache.containsKey(hash)) {
+                        return cache.get(hash);
+                    }
+                }
+                Image<?> img;
+                if (out.isFile()) {
+                    img = readImage(hash, new FileInputStream(out));
+                } else {
+                    URL u = new URL(url);
+                    URLConnection conn = u.openConnection();
+                    if (conn instanceof HttpURLConnection || conn instanceof HttpsURLConnection) {
+                        conn.setConnectTimeout(10000);
+                        conn.setReadTimeout(10000);
+                        conn.setRequestProperty("User-Agent", "urlimg");
+                        img = readAndSaveImage(hash, conn.getInputStream(), out);
+                    } else {
+                        throw new MalformedURLException("no protocol: " + u.getProtocol());
                     }
                 }
                 if (img != null) {
-                    cache.put(hash, img);
-                    return cache.get(hash);
+                    synchronized (cache) {
+                        cache.put(hash, img);
+                    }
                 }
-            } else {
-                Image img = readImage(hash, new URL(url).openStream());
-                if (img != null) {
-                    saveImage(img, path);
-                    cache.put(hash, img);
-                    return cache.get(hash);
-                }
+                return img;
             }
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return null;
     }
-
-    Image readImage(String hash, InputStream bin);
-
-    void saveImage(Image obj, Path out);
-
-    void showImages(String id);
 }

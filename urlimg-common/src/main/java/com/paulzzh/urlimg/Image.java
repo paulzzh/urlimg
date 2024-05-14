@@ -3,13 +3,13 @@ package com.paulzzh.urlimg;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Image {
+public class Image<I> {
     private String hash;
-    private Object image;
+    private I image;
     private int width;
     private int height;
 
-    public Image(String hash, Object image, int width, int height, int maxHeight) {
+    public Image(String hash, I image, int width, int height, int maxHeight) {
         this.hash = hash;
         this.image = image;
         BigDecimal b = new BigDecimal((float) height / width);
@@ -22,17 +22,13 @@ public class Image {
             this.height = maxHeight;
             this.width = (int) (maxHeight / hx);
         }
-        while ((this.width > 300 || this.height > maxHeight) && this.height > 16) {
-            this.height--;
-            this.width = (int) (this.height / hx);
-        }
     }
 
     public String getHash() {
         return this.hash;
     }
 
-    public Object getImage() {
+    public I getImage() {
         return this.image;
     }
 
