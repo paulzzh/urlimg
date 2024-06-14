@@ -32,7 +32,7 @@ subprojects {
     apply plugin: 'java-library'
 
     group = "com.paulzzh"
-    version = "1.0.1"
+    version = "1.0.2"
 
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

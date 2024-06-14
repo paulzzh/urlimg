@@ -24,27 +24,27 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
-      # Fabric 1.20.5
-      - name: Upload Artifact (Fabric 1.20.5)
+      # Fabric 1.21-1.20.5
+      - name: Upload Artifact (Fabric 1.21-1.20.5)
         uses: actions/upload-artifact@v4
         with:
-          name: 'urlimg Fabric 1.20.5'
+          name: 'urlimg Fabric 1.21-1.20.5'
           path: |
-            urlimg-fabric/urlimg-fabric-1.20.5/build/libs/**.jar
-      # Fabric 1.20.2
-      - name: Upload Artifact (Fabric 1.20.2)
+            urlimg-fabric/urlimg-fabric-1.21-1.20.5/build/libs/**.jar
+      # Fabric 1.20.4-1.20.2
+      - name: Upload Artifact (Fabric 1.20.4-1.20.2)
         uses: actions/upload-artifact@v4
         with:
-          name: 'urlimg Fabric 1.20.2'
+          name: 'urlimg Fabric 1.20.4-1.20.2'
           path: |
-            urlimg-fabric/urlimg-fabric-1.20.2/build/libs/**.jar
-      # Fabric 1.20
+            urlimg-fabric/urlimg-fabric-1.20.4-1.20.2/build/libs/**.jar
+      # Fabric 1.20.1-1.20
       - name: Upload Artifact (Fabric 1.20)
         uses: actions/upload-artifact@v4
         with:
-          name: 'urlimg Fabric 1.20'
+          name: 'urlimg Fabric 1.20.1-1.20'
           path: |
-            urlimg-fabric/urlimg-fabric-1.20/build/libs/**.jar
+            urlimg-fabric/urlimg-fabric-1.20.1-1.20/build/libs/**.jar
       # Fabric 1.19.4
       - name: Upload Artifact (Fabric 1.19.4)
         uses: actions/upload-artifact@v4
