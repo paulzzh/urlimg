@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.paulzzh.urlimg.Image;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextProperties;
@@ -13,7 +12,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import static com.paulzzh.urlimg.Mod.IM;
 import static com.paulzzh.urlimg.Mod.line_map;
@@ -26,10 +27,9 @@ public abstract class MixinChatHud {
     private Minecraft minecraft;
     private int indexY;
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/NewChatGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", ordinal = 0))
-    private void injected2(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
-        indexY = j;
-        NewChatGui.fill(matrixStack, i, j, k, l, m);
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/NewChatGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"))
+    private void injected1(Args args) {
+        indexY = args.get(2);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawShadow(Lcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/util/IReorderingProcessor;FFI)I"))

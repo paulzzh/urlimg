@@ -11,7 +11,9 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import static com.paulzzh.urlimg.Mod.IM;
 import static com.paulzzh.urlimg.Mod.line_map;
@@ -19,10 +21,9 @@ import static com.paulzzh.urlimg.Mod.line_map;
 @Mixin(net.minecraft.client.gui.hud.ChatHud.class)
 public abstract class MixinChatHud {
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
-    private void injected2(DrawContext instance, int i, int j, int k, int l, int m, @Share("indexY") LocalIntRef argRef) {
-        argRef.set(j);
-        instance.fill(i, j, k, l, m);
+    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
+    private void injected1(Args args, @Share("indexY") LocalIntRef argRef) {
+        argRef.set(args.get(1));
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;III)I"))

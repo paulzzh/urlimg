@@ -39,7 +39,7 @@ jobs:
           path: |
             urlimg-fabric/urlimg-fabric-1.20.4-1.20.2/build/libs/**.jar
       # Fabric 1.20.1-1.20
-      - name: Upload Artifact (Fabric 1.20)
+      - name: Upload Artifact (Fabric 1.20.1-1.20)
         uses: actions/upload-artifact@v4
         with:
           name: 'urlimg Fabric 1.20.1-1.20'

@@ -2,18 +2,6 @@ plugins {
     id("fabric-loom") version "1.6-SNAPSHOT" apply false
 }
 
-def gitCommitHash = {
-    def cmd = "git rev-parse --short HEAD"
-    try {
-        def ver = cmd.execute().text.trim()
-        if (ver == "") return ""
-        return "+" + ver
-    } catch (Exception e) {
-        e.printStackTrace()
-        return ""
-    }
-}
-
 allprojects {
     repositories {
         mavenCentral()
@@ -32,7 +20,7 @@ subprojects {
     apply plugin: 'java-library'
 
     group = "com.paulzzh"
-    version = "1.0.2"
+    version = "1.0.3"
 
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
