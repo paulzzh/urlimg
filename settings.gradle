@@ -25,5 +25,6 @@ include(
 )
 include(
         "urlimg-forge",
-        "urlimg-forge:urlimg-forge-1.16.5"
+        "urlimg-forge:urlimg-forge-1.16.5",
+        "urlimg-forge:urlimg-forge-1.20.1"
 )
