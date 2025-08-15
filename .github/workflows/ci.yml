@@ -59,3 +59,10 @@ jobs:
           name: 'urlimg Forge 1.16.5'
           path: |
             urlimg-forge/urlimg-forge-1.16.5/build/libs/**.jar
+      # Forge 1.20.1
+      - name: Upload Artifact (Forge 1.20.1)
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'urlimg Forge 1.20.1'
+          path: |
+            urlimg-forge/urlimg-forge-1.20.1/build/libs/**.jar
